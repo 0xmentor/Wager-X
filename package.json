@@ -10,6 +10,7 @@
     "lint": "npm --workspace backend run lint && npm --workspace frontend run lint",
     "test": "npm --workspace backend run test",
     "build": "npm --workspace backend run build && npm --workspace frontend run build",
+    "start": "npm --workspace backend run start",
     "audit": "npm audit --audit-level=critical"
   },
   "devDependencies": {
