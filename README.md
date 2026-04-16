@@ -1,4 +1,4 @@
-<h1 align="center">⚡ WAGER-X</h1>
+<h1 align="center"> 💰 WAGER-X</h1>
 <p align="center">
   <img src="./assets/wager-x-header.gif" alt="Wager-X Animated Header" width="100%" />
 </p>
