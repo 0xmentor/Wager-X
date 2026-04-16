@@ -44,7 +44,7 @@ Auth: JWT
 Infra: Docker (optional)  
 
 📦 Installation  
--git clone https://github.com/your-username/wager-x.git  
+-git clone https://github.com/0xmentor/wager-x.git  
 -cd wager-x  
 -npm install  
 
