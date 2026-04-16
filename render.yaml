@@ -23,6 +23,10 @@ services:
         value: 900
       - key: JWT_REFRESH_TTL
         value: 604800
+      - key: PG_CONNECT_RETRIES
+        value: 20
+      - key: PG_CONNECT_RETRY_DELAY_MS
+        value: 3000
       - key: AUTH_COOKIE_SAME_SITE
         value: none
       - key: ACCESS_COOKIE_NAME

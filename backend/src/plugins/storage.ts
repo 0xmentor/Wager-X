@@ -228,19 +228,53 @@ class InMemoryPg implements PgLike {
   }
 }
 
+async function sleep(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function createPg(app: any): Promise<PgLike> {
-  const pool = new Pool({ connectionString: config.databaseUrl });
-  try {
-    await pool.query("SELECT 1");
-    return pool;
-  } catch (error) {
-    await pool.end().catch(() => {});
-    if (config.nodeEnv === "production") {
-      throw error;
+  let lastError: unknown;
+  const retries = Math.max(1, config.pgConnectRetries);
+
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    const pool = new Pool({ connectionString: config.databaseUrl });
+    try {
+      await pool.query("SELECT 1");
+      if (attempt > 1) {
+        app.log.info({ attempt }, "PostgreSQL connection recovered");
+      }
+      return pool;
+    } catch (error) {
+      lastError = error;
+      await pool.end().catch(() => {});
+      app.log.warn(
+        { err: error, attempt, retries },
+        "PostgreSQL connection check failed"
+      );
+      if (attempt < retries) {
+        await sleep(config.pgConnectRetryDelayMs);
+      }
     }
-    app.log.warn({ err: error }, "PostgreSQL unavailable, using in-memory database for local development");
+  }
+
+  if (config.nodeEnv === "production" && !config.allowInMemoryDbInProduction) {
+    app.log.error(
+      {
+        retries,
+        retryDelayMs: config.pgConnectRetryDelayMs
+      },
+      "Failed to connect to PostgreSQL in production. Set DATABASE_URL correctly or enable ALLOW_INMEMORY_DB_IN_PROD=true only for temporary emergency fallback."
+    );
+    throw lastError instanceof Error ? lastError : new Error("Failed to connect to PostgreSQL");
+  }
+
+  if (config.nodeEnv === "production" && config.allowInMemoryDbInProduction) {
+    app.log.warn("Using in-memory database in production fallback mode");
     return new InMemoryPg();
   }
+
+  app.log.warn({ err: lastError }, "PostgreSQL unavailable, using in-memory database for local development");
+  return new InMemoryPg();
 }
 
 export default fp(async (app: any) => {

@@ -37,6 +37,9 @@ export const config = {
   ) as "lax" | "strict" | "none",
   cookieSecure: nodeEnv === "production",
   databaseUrl: process.env.DATABASE_URL ?? "postgres://postgres:postgres@localhost:5432/solbet",
+  pgConnectRetries: Number(process.env.PG_CONNECT_RETRIES ?? (nodeEnv === "production" ? 20 : 1)),
+  pgConnectRetryDelayMs: Number(process.env.PG_CONNECT_RETRY_DELAY_MS ?? 3000),
+  allowInMemoryDbInProduction: process.env.ALLOW_INMEMORY_DB_IN_PROD === "true",
   useRedis: process.env.USE_REDIS === "true",
   redisUrl: process.env.REDIS_URL
 };
