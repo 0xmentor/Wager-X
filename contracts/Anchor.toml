@@ -1,0 +1,13 @@
+[features]
+seeds = true
+skip-lint = false
+
+[programs.devnet]
+sol_bet = "SoLBET1111111111111111111111111111111111111"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "anchor test"
